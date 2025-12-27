@@ -2,7 +2,9 @@ name: Despliegue de Misión Navideña 2025
 
 on:
   push:
-    branches: [ main ] # Se activa solo cuando haces push a main
+      branches: [ master, main ]
+    pull_request:
+      branches: [ master, main ]
 
 jobs:
   build-and-deploy:
@@ -15,9 +17,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Instalando Dependencias
         run: npm install
+
+      - name: 🔎 Verificar Formato (Prettier)
+        run: npm run format
+
+      - name: 🚨 Ejecutar Linter (ESLint)
+        run: npm run lint
 
       - name: Ejecutando Tests de Seguridad
         run: npm run test:scientific # Aquí es donde muere el deploy si fallan los decimales
@@ -36,3 +45,4 @@ jobs:
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID }}
           vercel-args: '--prod'
+

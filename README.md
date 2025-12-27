@@ -10,6 +10,9 @@
 ![Security](https://img.shields.io/badge/SECURITY-ACTIVE-blue?style=for-the-badge&logo=supabase)
 ![Tests](https://img.shields.io/badge/TESTS-PASSED-success?style=for-the-badge&logo=vitest)
 
+## 🌐 Demo en Vivo
+[Haz clic aquí para ver el Simulador en Vercel](https://mi-proyecto-glass.vercel.app/)
+
 Este es un simulador de misión crítica diseñado para manejar una carga teórica de muchisimas peticiones simultáneas. Utiliza una arquitectura moderna basada en **Vite + React** y **Supabase** para el motor de datos en tiempo real.
 
 ## 🚀 Arquitectura de Alta Disponibilidad(Stack Tecnológico)

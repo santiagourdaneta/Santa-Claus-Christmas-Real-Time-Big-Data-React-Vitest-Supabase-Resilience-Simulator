@@ -1,4 +1,6 @@
 name: Respaldo Dominical de Base de Datos
+permissions:
+  contents: read
 on:
   schedule:
     - cron: '0 3 * * 0' # Todos los domingos a las 3:00 AM

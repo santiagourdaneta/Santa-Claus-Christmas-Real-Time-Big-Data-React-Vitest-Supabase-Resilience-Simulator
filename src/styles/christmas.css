@@ -265,3 +265,91 @@ tr td:last-child {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* --- INDICADOR DE STATUS (Online/Offline) --- */
+.status-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.status-pill.online {
+  background: rgba(46, 213, 115, 0.15);
+  color: #2ed573;
+}
+
+.status-pill.offline {
+  background: rgba(255, 71, 87, 0.15);
+  color: #ff4757;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot.green { background: #2ed573; box-shadow: 0 0 10px #2ed573; }
+.dot.pulse-red {
+  background: #ff4757;
+  animation: pulse-red-dot 1.5s infinite;
+}
+
+@keyframes pulse-red-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 71, 87, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+}
+
+/* --- ESCUDO DE PROTECCIÓN (Animación de Pulso) --- */
+.shield-text {
+  font-weight: bold;
+  transition: transform 0.3s ease;
+  margin-top: 10px;
+  color: #00d2ff;
+}
+
+.shield-pulse {
+  animation: shield-hit 0.6s ease-out;
+  color: #fff !important;
+  text-shadow: 0 0 15px #00d2ff;
+}
+
+@keyframes shield-hit {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); filter: brightness(1.5); }
+  100% { transform: scale(1); }
+}
+
+/* --- BADGE DE ERROR --- */
+.error-badge {
+  background: rgba(255, 71, 87, 0.8);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}

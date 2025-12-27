@@ -4,7 +4,6 @@ import * as Sentry from "@sentry/react";
 import Santa from './components/Santa';
 import GlassCard from './components/GlassCard';
 
-// Inicialización del cliente
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL, 
   import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -17,9 +16,22 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorLog, setErrorLog] = useState<string | null>(null);
   const [bloqueos, setBloqueos] = useState(0);
+  
+  // --- Hook para estado Offline ---
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
-    // 1. Carga Inicial de Datos (conteo e histórico)
+    const handleStatus = () => setIsOffline(!navigator.onLine);
+    window.addEventListener('online', handleStatus);
+    window.addEventListener('offline', handleStatus);
+    return () => {
+      window.removeEventListener('online', handleStatus);
+      window.removeEventListener('offline', handleStatus);
+    };
+  }, []);
+
+  // 1. Datos iniciales y Realtime de Simulaciones
+  useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
@@ -42,7 +54,6 @@ export default function App() {
 
     fetchInitialData();
 
-    // 2. Suscripción Realtime (Escucha Global)
     const channel = supabase
       .channel('cambios-navidenos')
       .on('postgres_changes', 
@@ -57,60 +68,57 @@ export default function App() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
+  // 2. Auditoría de Bloqueos
   useEffect(() => {
+    const el = document.getElementById('shield-counter');
+    if (el) {
+      el.classList.add('shield-pulse');
+      setTimeout(() => el.classList.remove('shield-pulse'), 600);
+    }
 
-  const el = document.getElementById('shield-counter');
-  if (el) {
-    el.classList.add('shield-pulse');
-    setTimeout(() => el.classList.remove('shield-pulse'), 600);
-  }
+    const fetchAuditoria = async () => {
+      const { count } = await supabase
+        .from('logs_auditoria')
+        .select('*', { count: 'exact', head: true });
+      if (count !== null) setBloqueos(count);
+    };
+    
+    fetchAuditoria();
+    
+    const auditChannel = supabase.channel('audit-logs')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'logs_auditoria' }, 
+      () => setBloqueos(prev => prev + 1))
+      .subscribe();
 
-  const fetchAuditoria = async () => {
-    const { count } = await supabase
-      .from('logs_auditoria')
-      .select('*', { count: 'exact', head: true });
-    if (count) setBloqueos(count);
-  };
-  
-  fetchAuditoria();
-  
-  // Escuchar bloqueos en tiempo real
-  const auditChannel = supabase.channel('audit-logs')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'logs_auditoria' }, 
-    () => setBloqueos(prev => prev + 1))
-    .subscribe();
+    return () => { supabase.removeChannel(auditChannel); };
+  }, [bloqueos]);
 
-  return () => { supabase.removeChannel(auditChannel); };
-}, , [bloqueos]); // Se ejecuta cada vez que 'bloqueos' sube
-
-  // 3. Función para ejecutar la simulación (Escritura)
   const handleMagic = async (velocidad: number) => {
+    if (isOffline) {
+      setErrorLog("⚠️ Estás offline. No puedes enviar magia.");
+      return;
+    }
+
     setMagicActive(true);
     setErrorLog(null);
 
     const { error } = await supabase
       .from('simulaciones')
-      .insert([{ 
-        velocidad, 
-        creado_at: new Date().toISOString() 
-      }]);
+      .insert([{ velocidad, creado_at: new Date().toISOString() }]);
 
     if (error) {
-      // Si el error es por el Rate Limit (SQL), lo capturamos aquí
       const msg = error.message.includes('Límite') 
         ? "⚠️ ¡Demasiada magia! Rate limit activado." 
-        : "Error en la transmisión de datos.";
+        : "Error en la transmisión.";
       setErrorLog(msg);
       Sentry.captureException(error);
     }
 
-    // Duración de la animación de Santa
     setTimeout(() => setMagicActive(false), 8000);
   };
 
   return (
     <div className="main-wrapper">
-      {/* Panel de Estadísticas con Impacto Global */}
       <div className="stats-panel glass-card">
         <span className="glow-text">Impacto Global: {totalMagia.toLocaleString()} Almas</span>
         <p id="shield-counter" className="shield-text">
@@ -120,10 +128,8 @@ export default function App() {
       </div>
 
       <Santa visible={magicActive} />
-      
       <GlassCard onActivateMagic={handleMagic} magicActive={magicActive} />
 
-      {/* Tabla con Skeletons */}
       <div className="tabla-container glass-card">
         <h3 className="christmas-title">Últimos Vuelos Detectados</h3>
         <div className="tabla-content">
@@ -142,19 +148,18 @@ export default function App() {
         </div>
       </div>
 
-
-<div className="status-indicator">
-  {isOffline ? (
-    <div className="status-pill offline">
-      <span className="dot pulse-red"></span> MODO OFFLINE ACTIVADO
-    </div>
-  ) : (
-    <div className="status-pill online">
-      <span className="dot green"></span> SISTEMAS NOMINALES
-    </div>
-  )}
-</div>
-
+      {/* Indicador de Status Offline/Online */}
+      <div className="status-indicator">
+        {isOffline ? (
+          <div className="status-pill offline">
+            <span className="dot pulse-red"></span> MODO OFFLINE
+          </div>
+        ) : (
+          <div className="status-pill online">
+            <span className="dot green"></span> SISTEMAS NOMINALES
+          </div>
+        )}
+      </div>
     </div>
   );
 }

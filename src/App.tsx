@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next" 
 import { createClient } from '@supabase/supabase-js';
 import * as Sentry from "@sentry/react";
 import Santa from './components/Santa';

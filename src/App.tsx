@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'; 
 import { createClient } from '@supabase/supabase-js';
 import * as Sentry from "@sentry/react";
+import { Analytics } from '@vercel/analytics/react';
 import Santa from './components/Santa';
 import GlassCard from './components/GlassCard';
 
@@ -160,6 +161,8 @@ export default function App() {
           </div>
         )}
       </div>
+
+      <Analytics />
     </div>
   );
 }

@@ -6,6 +6,10 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io/)
 [![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 
+![Build Status](https://img.shields.io/github/actions/workflow/status/santiagourdaneta/Santa-Claus-Christmas-Real-Time-Big-Data-React-Vitest-Supabase-Resilience-Simulator/ci.yml?branch=main&style=for-the-badge&logo=github&label=BUILD)
+![Security](https://img.shields.io/badge/SECURITY-ACTIVE-blue?style=for-the-badge&logo=supabase)
+![Tests](https://img.shields.io/badge/TESTS-PASSED-success?style=for-the-badge&logo=vitest)
+
 Este es un simulador de misión crítica diseñado para manejar una carga teórica de muchisimas peticiones simultáneas. Utiliza una arquitectura moderna basada en **Vite + React** y **Supabase** para el motor de datos en tiempo real.
 
 ## 🚀 Arquitectura de Alta Disponibilidad(Stack Tecnológico)

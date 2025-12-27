@@ -91,7 +91,7 @@ export default function App() {
       .subscribe();
 
     return () => { supabase.removeChannel(auditChannel); };
-  }, [bloqueos]);
+  }, [bloqueos]); 
 
   const handleMagic = async (velocidad: number) => {
     if (isOffline) {

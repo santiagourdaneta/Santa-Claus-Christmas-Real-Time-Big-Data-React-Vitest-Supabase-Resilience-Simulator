@@ -1,0 +1,6 @@
+[auth]
+token=750e4d3a4b18af57596f4aa03efcecfeb1a3447f13577196f6de84ae00f224fa
+
+[defaults]
+org=firstpointcompany
+project=javascript-react

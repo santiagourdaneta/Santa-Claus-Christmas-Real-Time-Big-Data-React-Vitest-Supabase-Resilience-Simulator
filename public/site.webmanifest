@@ -1,0 +1,15 @@
+{
+    "name": "Navidad Glassmorphism",
+    "short_name": "Navidad",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0a0a2a",
+    "description": "Mágica Navidad 2024 con Papá Noel en 3D",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

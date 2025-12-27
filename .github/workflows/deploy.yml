@@ -1,0 +1,38 @@
+name: Despliegue de Misión Navideña 2025
+
+on:
+  push:
+    branches: [ main ] # Se activa solo cuando haces push a main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargando Código
+        uses: actions/checkout@v4
+
+      - name: Instalando Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalando Dependencias
+        run: npm install
+
+      - name: Ejecutando Tests de Seguridad
+        run: npm run test:scientific # Aquí es donde muere el deploy si fallan los decimales
+
+      - name: Subiendo a Sentry
+        run: |
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+          export SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+          npx @sentry/wizard@latest -i sourcemaps 
+
+      - name: Desplegar en Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          vercel-args: '--prod'

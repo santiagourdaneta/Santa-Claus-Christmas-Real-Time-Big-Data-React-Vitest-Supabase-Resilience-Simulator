@@ -1,0 +1,27 @@
+name: Respaldo Dominical de Base de Datos
+on:
+  schedule:
+    - cron: '0 3 * * 0' # Todos los domingos a las 3:00 AM
+  workflow_dispatch: # Permite ejecutarlo manualmente para probar
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar PostgreSQL Client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Ejecutar pg_dump
+        env:
+          # Estas variables las sacas de Supabase > Settings > Database
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_URL: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          pg_dump $DB_URL > backup_navidad_$(date +%Y%m%d).sql
+
+      - name: Guardar Respaldo en GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backup_navidad_*.sql
+          retention-days: 30 # Se borra solo en 30 días para no acumular basura
